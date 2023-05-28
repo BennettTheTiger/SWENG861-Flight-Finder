@@ -9,7 +9,8 @@
 /coverage
 
 # production
-/build
+# render free plan maxes out memory doing this build
+# /build
 
 # misc
 .DS_Store

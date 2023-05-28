@@ -6,7 +6,8 @@
   "scripts": {
     "client-build": "cd client && npm run build",
     "start": "npm run client-build && node ./server/index.js",
-    "local":"node ./server/index.js",
+    "local": "node ./server/index.js",
+    "server": "node ./server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Bennett Schoonerman",
