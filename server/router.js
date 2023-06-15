@@ -17,15 +17,32 @@ router.get(`/${API}/search/location`, async (req, res) => {
   if (!keyword) {
     res.sendStatus(400);
   }
-  const response = await amadeus.referenceData.locations.get({
+  await amadeus.referenceData.locations.get({
     keyword,
-    subType: subType || Amadeus.location.any, // Amadeus.location.airport
+    subType: subType || Amadeus.location.airport, // Amadeus.location.airport
+  }).then(async (response) => {
+    try {
+      await res.json(JSON.parse(response.body));
+    } catch (err) {
+      await res.json(err);
+    }
+  }).catch((err) => {
+    console.log(err);
   });
-  try {
+});
+
+// Am I getting a good deal on this flight?
+router.post(`/${API}/checkFlightDeal`, async (req, res) => {
+  amadeus.analytics.itineraryPriceMetrics.get({
+    originIataCode: 'JFK',
+    destinationIataCode: 'SFO',
+    currencyCode: 'USD',
+    departureDate: new Date().toISOString().substring(0, 10), // NOW
+  }).then(async (response) => {
     await res.json(JSON.parse(response.body));
-  } catch (err) {
-    await res.json(err);
-  }
+  }).catch((error) => {
+    res.json(error);
+  });
 });
 
 // finds flights
@@ -37,11 +54,13 @@ router.post(`/${API}/findFlights`, async (req, res) => {
     adults: '1',
   }).then(async (response) => {
     try {
+      console.log(response);
       await res.json(JSON.parse(response.body));
     } catch (err) {
       await res.json(err);
     }
   }).catch((error) => {
+    console.log(error);
     res.json(error);
   });
 });
