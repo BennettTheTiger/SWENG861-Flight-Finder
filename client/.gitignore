@@ -12,6 +12,8 @@
 # render free plan maxes out memory doing this build
 # /build
 
+package-lock.json
+
 # misc
 .DS_Store
 .env.local

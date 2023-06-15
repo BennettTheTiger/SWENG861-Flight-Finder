@@ -1,18 +1,17 @@
 /* eslint-disable no-unused-vars */
 import { useState, React } from 'react';
-import Button from '@mui/material/Button';
 import './app.css';
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { isEmpty, pathOr } from 'ramda';
 import { styled } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import Grid from '@mui/material/Grid';
-import BasicCard from './components/BasicCard';
-import { Search } from './components/AirportAutoComplete';
+import {
+  TextField, Box, Paper, Grid, Button, Autocomplete,
+} from '@mui/material';
+import BasicCard from './components/BasicCard/BasicCard';
 
-import { findFlights } from './api';
+import { findFlights, checkFlightDeal } from './api';
+import PlaneLoader from './components/PlaneLoader';
+import AirportSearch from './components/AirportSearch/AirportSearch';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -25,7 +24,34 @@ const Item = styled(Paper)(({ theme }) => ({
 function App() {
   const [departureAirportCode, setDepartureAirportCode] = useState(null);
   const [arrivalAirportCode, setArrivalAirportCode] = useState(null);
+  const [numberOfAdults, setNumberOfAdults] = useState('1');
+  const [flightDate, setFlightDate] = useState(new Date().toISOString().substr(0, 10));
   const [flightResults, setFlightResults] = useState({});
+  const [flightDealInfo, setFlightDealInfo] = useState({});
+  const [isLoadingFlights, setFlightsLoading] = useState(false);
+
+  async function handleFetchFlights() {
+    console.log('about to load');
+    setFlightsLoading(true);
+    // core flight data
+    const findFlightsRequest = findFlights({
+      originLocationCode: departureAirportCode,
+      destinationLocationCode: arrivalAirportCode,
+    }).then((result) => {
+      setFlightResults(result);
+      setFlightsLoading(false);
+    });
+    // deal data
+    checkFlightDeal({
+      originIataCode: departureAirportCode,
+      destinationIataCode: arrivalAirportCode,
+    }).then((result) => {
+      setFlightDealInfo(result);
+      console.log('deal result', result);
+    });
+
+    console.log('all done');
+  }
 
   function getFlightData() {
     return flightResults?.data?.data || [];
@@ -35,31 +61,46 @@ function App() {
     <div className="App">
       <section>
         <Box sx={{ flexGrow: 1 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={5}>
+          <Grid container>
+            <Grid item xs={6}>
               <Item>
-                <Search setValue={setDepartureAirportCode} label="Departure" />
+                <AirportSearch label="Origin" handleSelection={setDepartureAirportCode} />
               </Item>
             </Grid>
-            <Grid item xs={5}>
+            <Grid item xs={6}>
               <Item>
-                <Search setValue={setArrivalAirportCode} label="Arrival" />
+                <AirportSearch label="Destination" handleSelection={setArrivalAirportCode} />
               </Item>
             </Grid>
             <Grid item xs={2}>
               <Item>
+                <TextField
+                  label="Seats"
+                  type="number"
+                  value={numberOfAdults}
+                  onChange={(evt) => setNumberOfAdults(evt.target.value)}
+                />
+              </Item>
+            </Grid>
+            <Grid item xs={5}>
+              <Item>
+                <TextField
+                  label="Date"
+                  placeholder={1}
+                  type="date"
+                  min={new Date().toISOString().substring(0, 10)}
+                  value={flightDate}
+                  onChange={(evt) => setFlightDate(evt.target.value)}
+                />
+              </Item>
+            </Grid>
+            <Grid item xs={5}>
+              <Item>
                 <Button
                   variant="contained"
-                  onClick={() => {
-                    console.log({
-                      originLocationCode: departureAirportCode,
-                      destinationLocationCode: arrivalAirportCode,
-                    });
-                    findFlights({
-                      originLocationCode: departureAirportCode,
-                      destinationLocationCode: arrivalAirportCode,
-                    }, setFlightResults);
-                  }}
+                  disabled
+                  onClick={() => handleFetchFlights()}
+                  onChange={(evt) => setNumberOfAdults(evt.target.value)}
                 >
                   Submit
                 </Button>
@@ -69,7 +110,8 @@ function App() {
         </Box>
       </section>
       <section className="results">
-        { Object.keys(flightResults).length === 0 ? null : (
+        {isLoadingFlights && <PlaneLoader />}
+        { isEmpty(flightResults) ? null : (
           <Box sx={{ flexGrow: 1 }}>
             {
               getFlightData().map((flight) => (

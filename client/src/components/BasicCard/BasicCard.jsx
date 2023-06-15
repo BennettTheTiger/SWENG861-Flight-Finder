@@ -8,7 +8,9 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
+import { FlightTakeoff, FlightLand } from '@mui/icons-material';
+
+import './basic-card.scss';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -18,12 +20,23 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
+function fixString(value) {
+  const words = value.toLowerCase().split(' ');
+  words.forEach((word, i) => {
+    words[i] = word[0].toUpperCase() + word.substr(1);
+  });
+
+  return words.join(' ');
+}
+
 function getAircraft(segment, dictionaries) {
-  return dictionaries.aircraft[segment.aircraft.code] || 'N/A';
+  const value = dictionaries.aircraft[segment.aircraft.code] || 'N/A';
+  return fixString(value);
 }
 
 function getAirline(segment, dictionaries) {
-  return dictionaries.carriers[segment.carrierCode] || 'N/A';
+  const value = dictionaries.carriers[segment.carrierCode] || 'N/A';
+  return fixString(value);
 }
 
 function locationAtTimeHelper(info) {
@@ -32,33 +45,31 @@ function locationAtTimeHelper(info) {
 }
 
 function renderFlightPrice(flight) {
-  return <Typography>{`$${flight.price.grandTotal}`}</Typography>;
+  return `$${flight.price.grandTotal}`;
 }
 
 function renderSegment(segment, dictionaries) {
   const { departure, arrival } = segment;
-  const departureString = `Depart ${locationAtTimeHelper(departure)}`;
-  const arrivalString = `Arrive ${locationAtTimeHelper(arrival)}`;
   return (
-    <>
-      <Typography>{departureString}</Typography>
-      <Typography>{arrivalString}</Typography>
-      <Typography>{getAirline(segment, dictionaries)}</Typography>
-      <Typography>{getAircraft(segment, dictionaries)}</Typography>
-    </>
+    <div className="segment">
+      <div className="depart">
+        <FlightTakeoff />
+        {locationAtTimeHelper(departure)}
+      </div>
+      <div className="carrier-info">
+        <div className="airline">{getAirline(segment, dictionaries)}</div>
+        <div className="divider"> - </div>
+        <div className="aircraft-type">{getAircraft(segment, dictionaries)}</div>
+      </div>
+      <div className="arive">
+        <FlightLand />
+        {locationAtTimeHelper(arrival)}
+      </div>
+    </div>
   );
 }
 
-/*
-
-      <CardActions>
-        <Button size="small">Learn More</Button>
-      </CardActions>
-
-*/
-
 export default function BasicCard(props) {
-  console.log(props);
   const { flight, dictionaries } = props;
   return (
     <Card sx={{ minWidth: 275 }}>
