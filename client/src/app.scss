@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+$midnight-green: #1a535cff;
+$mint: #4fb477ff;
+$mint-cream: #f7fff7ff;
+$light-red: #ff6b6bff;
+$naples-yellow: #ffe66dff;
+
+body { 
+    margin: 0;
+    background-color: $mint-cream;
+    font-family: 'Roboto', sans-serif;
+
+    .App {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+
+        section {
+            &.results {
+                flex-grow: 1;
+            }
+        }
+    }
+
+    .MuiGrid-item {
+        padding: 5px;
+        flex-direction: unset;
+    }
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    background-color: $midnight-green;
+    color: $mint-cream;
+}

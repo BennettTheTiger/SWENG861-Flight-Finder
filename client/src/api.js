@@ -9,7 +9,6 @@ const search = (input) => {
           axios.get(`/api/search/location?keyword=${input}`, {
             signal: controller.signal,
           }).then((response) => {
-            console.log(response);
             callback(response.data);
           });
         },
@@ -30,14 +29,14 @@ const search = (input) => {
 };
 
 const findFlights = (params) => axios.post('/api/findFlights', { ...params, currencyCode: 'USD' }).then(
-  (response) => response,
+  (response) => response.data,
 ).catch((error) => {
   console.log(error);
   console.log('handle errors here');
 });
 
 const checkFlightDeal = (params) => axios.post('/api/checkFlightDeal', { ...params, currencyCode: 'USD' }).then(
-  (response) => response,
+  (response) => response.data,
 ).catch((error) => {
   console.log(error);
   console.log('handle errors here');

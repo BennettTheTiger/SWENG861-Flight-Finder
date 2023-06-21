@@ -1,0 +1,53 @@
+@import '../../colorPalette.scss';
+
+.deal-summary {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: $midnight-green;
+    color: $mint-cream;
+    text-align: center;
+
+    hr {
+        width: 75%;
+        border: 0.5px solid;
+    }
+
+    .title {
+        padding-top: 5px;
+    }
+
+    .quartiles {
+        display: flex;
+        padding-bottom: 5px;
+        flex-direction: row;
+    }
+
+    .price-metric {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex-grow: 1;
+
+        // custom colors for the different prices
+        .maximum {
+            color: $light-red;
+        }
+
+        .third {
+            color: color-mix(in srgb, $naples-yellow, $light-red);
+        }
+
+        .medium {
+            color: $naples-yellow;
+        }
+
+        .first {
+            color: color-mix(in srgb, $mint, $naples-yellow);
+        }
+
+        .minimum {
+            color: $mint;
+        }
+    }
+}

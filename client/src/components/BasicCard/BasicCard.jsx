@@ -1,42 +1,39 @@
 /* eslint-disable react/prop-types */
 import * as React from 'react';
 import Card from '@mui/material/Card';
-// import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import { styled } from '@mui/material/styles';
 // import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
-import { FlightTakeoff, FlightLand } from '@mui/icons-material';
+import {
+  FlightTakeoff, FlightLand, AccessTime, Airlines, Flight,
+} from '@mui/icons-material';
+
+import parse from 'parse-duration';
+import useWordCasing from '../../utils/wordCase';
 
 import './basic-card.scss';
+import { convertMsToTime } from '../../utils/date';
 
 const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  backgroundColor: '#1a535cff',
   ...theme.typography.body2,
+  margin: 5,
   padding: theme.spacing(1),
   textAlign: 'center',
-  color: theme.palette.text.secondary,
+  color: '#f7fff7ff',
 }));
-
-function fixString(value) {
-  const words = value.toLowerCase().split(' ');
-  words.forEach((word, i) => {
-    words[i] = word[0].toUpperCase() + word.substr(1);
-  });
-
-  return words.join(' ');
-}
 
 function getAircraft(segment, dictionaries) {
   const value = dictionaries.aircraft[segment.aircraft.code] || 'N/A';
-  return fixString(value);
+  return useWordCasing(value);
 }
 
 function getAirline(segment, dictionaries) {
   const value = dictionaries.carriers[segment.carrierCode] || 'N/A';
-  return fixString(value);
+  return useWordCasing(value);
 }
 
 function locationAtTimeHelper(info) {
@@ -48,6 +45,22 @@ function renderFlightPrice(flight) {
   return `$${flight.price.grandTotal}`;
 }
 
+function getTotalTimeAsString(amadeusTime) {
+  const parsedTime = parse(amadeusTime);
+  const timeParts = convertMsToTime(parsedTime);
+  const hoursPlural = `${timeParts.hours} ${timeParts.hours === 1 ? 'Hour ' : 'Hours'}`;
+  const minutesPlural = `${timeParts.minutes} ${timeParts.minutes === 1 ? 'Minute ' : 'Minutes'}`;
+  return `${hoursPlural} ${minutesPlural}`;
+}
+
+function getItineraryDurationString(flight, index = 0) {
+  const flightItineraryDuration = flight?.itineraries?.[index]?.duration;
+  if (!flightItineraryDuration) {
+    return '';
+  }
+  return getTotalTimeAsString(flightItineraryDuration);
+}
+
 function renderSegment(segment, dictionaries) {
   const { departure, arrival } = segment;
   return (
@@ -57,9 +70,16 @@ function renderSegment(segment, dictionaries) {
         {locationAtTimeHelper(departure)}
       </div>
       <div className="carrier-info">
-        <div className="airline">{getAirline(segment, dictionaries)}</div>
-        <div className="divider"> - </div>
-        <div className="aircraft-type">{getAircraft(segment, dictionaries)}</div>
+        <Airlines />
+        {getAirline(segment, dictionaries)}
+      </div>
+      <div className="carrier-info">
+        <Flight />
+        {getAircraft(segment, dictionaries)}
+      </div>
+      <div className="duration">
+        <AccessTime />
+        {getTotalTimeAsString(segment.duration)}
       </div>
       <div className="arive">
         <FlightLand />
@@ -76,12 +96,14 @@ export default function BasicCard(props) {
       <CardContent>
         <Box sx={{ flexGrow: 1 }}>
           <Grid container spacing={2}>
-            <Grid item xs={3}>
+            <Grid item sm={6} xs={12}>
               <Item>
-                {renderFlightPrice(flight)}
+                <div className="price">{renderFlightPrice(flight)}</div>
+                <div className="total-time">{getItineraryDurationString(flight)}</div>
+                <div className="price">{`Bookable Seats: ${flight.numberOfBookableSeats || 'N/A'}`}</div>
               </Item>
             </Grid>
-            <Grid item xs={9}>
+            <Grid item sm={6} xs={12}>
               {flight.itineraries.map((itinerary) => {
                 if (itinerary?.segments) {
                   return itinerary?.segments.map((segment) => (
