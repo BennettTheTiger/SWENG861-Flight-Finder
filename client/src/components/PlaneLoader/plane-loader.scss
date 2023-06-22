@@ -2,9 +2,22 @@
 
 
 .plane-loader {
-    position: relative;
-    top: -100%;
-    height: 100%;
+    top: 0;
+    position: fixed;
+    height: 100vh;
+    width: 100%;
+    background-color: $naples-yellow ;
+    z-index: 2;
+
+    .search-text {
+        display: flex;
+        height: 100vh;
+        width: 100vw;
+        align-items: center;
+        justify-content: center;
+        color: $midnight-green;
+    }
+
     //flight loading
     .flight-preloader {
     svg {

@@ -90,9 +90,11 @@ function renderSegment(segment, dictionaries) {
 }
 
 export default function BasicCard(props) {
-  const { flight, dictionaries } = props;
+  const { flight, dictionaries, flightPriceData } = props;
+  const avgDifference = Number(flight.price.grandTotal - flightPriceData.avg).toFixed(2);
+  const textStyleColor = { color: avgDifference < 0 ? '#4fb477ff' : '#ff6b6bff' };
   return (
-    <Card sx={{ minWidth: 275 }}>
+    <Card sx={{ minWidth: 275, backgroundColor: '#ffe66dff' }}>
       <CardContent>
         <Box sx={{ flexGrow: 1 }}>
           <Grid container spacing={2}>
@@ -101,6 +103,10 @@ export default function BasicCard(props) {
                 <div className="price">{renderFlightPrice(flight)}</div>
                 <div className="total-time">{getItineraryDurationString(flight)}</div>
                 <div className="price">{`Bookable Seats: ${flight.numberOfBookableSeats || 'N/A'}`}</div>
+                <div className="price-avg-diff">
+                  <span style={textStyleColor}>{`$${avgDifference}`}</span>
+                  {` ${avgDifference < 0 ? 'below' : 'above'} average`}
+                </div>
               </Item>
             </Grid>
             <Grid item sm={6} xs={12}>

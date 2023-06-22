@@ -1,7 +1,7 @@
 import { useState, React } from 'react';
 import './app.scss';
 
-import { isEmpty, omit } from 'ramda';
+import { isEmpty, isNil, omit } from 'ramda';
 import {
   TextField, Box, Grid, Button,
 } from '@mui/material';
@@ -13,6 +13,7 @@ import AirportSearch from './components/AirportSearch/AirportSearch';
 import { dateIsTodayOrFuture, getLocalDate } from './utils/date';
 import DealSummary from './components/DealScore/DealSummary';
 import NoFlightsFound from './components/NoFlightsFound/NoFlightsFound';
+import analyzeFlightData from './utils/analyzeFlightData';
 
 function App() {
   const [departureAirportCode, setDepartureAirportCode] = useState('');
@@ -25,7 +26,9 @@ function App() {
   const [isLoadingFlights, setFlightsLoading] = useState(false);
 
   function isInvalid() {
-    return !isEmpty(errors) || isEmpty(departureAirportCode) || isEmpty(arrivalAirportCode);
+    return !isEmpty(errors)
+      || isEmpty(departureAirportCode) || isNil(departureAirportCode)
+      || isEmpty(arrivalAirportCode) || isNil(arrivalAirportCode);
   }
 
   async function handleFetchFlights() {
@@ -36,14 +39,12 @@ function App() {
       destinationLocationCode: arrivalAirportCode,
       adults: numberOfAdults,
       departureDate,
-    }).then((result) => {
-      console.log(result);
-      setFlightResults(result);
-    });
+    }).then((result) => setFlightResults(result));
     // deal data
     const dealResult = checkFlightDeal({
       originIataCode: departureAirportCode,
       destinationIataCode: arrivalAirportCode,
+      oneWay: true,
       departureDate,
     }).then((result) => setFlightDealInfo(result));
 
@@ -55,7 +56,7 @@ function App() {
     return flightResults?.data || [];
   }
 
-  console.log(flightDealInfo);
+  const flightPriceData = analyzeFlightData(flightResults);
 
   return (
     <div className="App">
@@ -123,14 +124,18 @@ function App() {
       </section>
       <DealSummary flightDealInfo={flightDealInfo} />
       <section className="results">
-        { isEmpty(flightResults)
+        { isEmpty(flightResults) || flightResults?.meta?.count === 0
           ? <NoFlightsFound isLoadingFlights={isLoadingFlights} />
           : (
             <Box sx={{ flexGrow: 1 }}>
               {
               getFlightData().map((flight) => (
                 <Grid item xs={12} sm={6} key={flight.id}>
-                  <BasicCard flight={flight} dictionaries={flightResults?.dictionaries} />
+                  <BasicCard
+                    flight={flight}
+                    dictionaries={flightResults?.dictionaries}
+                    flightPriceData={flightPriceData}
+                  />
                 </Grid>
               ))
             }

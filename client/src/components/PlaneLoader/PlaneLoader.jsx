@@ -14,6 +14,9 @@ function PlaneLoader() {
           </g>
         </svg>
       </div>
+      <div className="search-text">
+        Searching for Flights
+      </div>
     </div>
   );
 }
