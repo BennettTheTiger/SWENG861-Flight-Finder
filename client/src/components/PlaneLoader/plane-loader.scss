@@ -1,0 +1,47 @@
+@import '../../colorPalette.scss';
+
+
+.plane-loader {
+    top: 0;
+    position: fixed;
+    height: 100vh;
+    width: 100%;
+    background-color: $naples-yellow ;
+    z-index: 2;
+
+    .search-text {
+        display: flex;
+        height: 100vh;
+        width: 100vw;
+        align-items: center;
+        justify-content: center;
+        color: $midnight-green;
+    }
+
+    //flight loading
+    .flight-preloader {
+    svg {
+        max-width: 95%;
+        max-height: 95%;
+        position: absolute;
+        top: -100px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        path {
+        fill-opacity: 0;
+        stroke: $midnight-green;
+        stroke-width: 3;
+        stroke-dasharray: 670;
+        stroke-dashoffset: 670;
+        animation: draw 3s infinite linear;
+        }
+    }
+    @keyframes draw {
+        to {
+        stroke-dashoffset: 0;
+        }
+    }
+    }
+}

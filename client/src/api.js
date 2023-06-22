@@ -1,26 +1,19 @@
 import axios from 'axios';
 
-const { CancelToken } = axios;
 const search = (input) => {
   if (input) {
     try {
-      const source = CancelToken.source();
-      const request = axios.get(`/api/search/location?keyword=${input}`, {
-        cancelToken: source.token,
-      });
+      const controller = new AbortController();
       return {
         async process(callback) {
-          request.then((response) => {
-            const json = response.data;
-            if (json && json.data) {
-              callback(
-                json.data.map((item) => item),
-              );
-            }
+          axios.get(`/api/search/location?keyword=${input}`, {
+            signal: controller.signal,
+          }).then((response) => {
+            callback(response.data);
           });
         },
         cancel() {
-          source.cancel();
+          controller.abort();
         },
       };
     } catch (error) {
@@ -35,13 +28,18 @@ const search = (input) => {
   };
 };
 
-const findFlights = (params, callback) => {
-  axios.post('/api/findFlights', { ...params, currencyCode: 'USD' }).then(
-    (response) => callback(response),
-  ).catch((error) => {
-    console.log(error);
-    console.log('handle errors here');
-  });
-};
+const findFlights = (params) => axios.post('/api/findFlights', { ...params, currencyCode: 'USD' }).then(
+  (response) => response.data,
+).catch((error) => {
+  console.log(error);
+  console.log('handle errors here');
+});
 
-export { search, findFlights };
+const checkFlightDeal = (params) => axios.post('/api/checkFlightDeal', { ...params, currencyCode: 'USD' }).then(
+  (response) => response.data,
+).catch((error) => {
+  console.log(error);
+  console.log('handle errors here');
+});
+
+export { search, findFlights, checkFlightDeal };

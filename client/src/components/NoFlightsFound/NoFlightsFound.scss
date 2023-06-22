@@ -1,0 +1,10 @@
+@import '../../colorPalette.scss';
+
+.no-flights-found {
+    background-color: $naples-yellow;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $midnight-green;
+}
