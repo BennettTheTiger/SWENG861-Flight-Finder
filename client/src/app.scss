@@ -1,10 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
-
-$midnight-green: #1a535cff;
-$mint: #4fb477ff;
-$mint-cream: #f7fff7ff;
-$light-red: #ff6b6bff;
-$naples-yellow: #ffe66dff;
+@import './colorPalette.scss';
 
 body { 
     margin: 0;

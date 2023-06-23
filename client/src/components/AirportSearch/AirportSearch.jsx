@@ -14,11 +14,12 @@ export default function AirportSearch(props) {
   const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = React.useState([]);
 
+  // fires API request
   const fetch = React.useMemo(
     () => debounce((request, callback) => {
       const { process } = search(request.input);
       process(callback);
-    }, 1000), // 800ms keystroke cooldown
+    }, 800), // keystroke cooldown
     [],
   );
 

@@ -32,14 +32,12 @@ const findFlights = (params) => axios.post('/api/findFlights', { ...params, curr
   (response) => response.data,
 ).catch((error) => {
   console.log(error);
-  console.log('handle errors here');
 });
 
 const checkFlightDeal = (params) => axios.post('/api/checkFlightDeal', { ...params, currencyCode: 'USD' }).then(
   (response) => response.data,
 ).catch((error) => {
   console.log(error);
-  console.log('handle errors here');
 });
 
 export { search, findFlights, checkFlightDeal };
