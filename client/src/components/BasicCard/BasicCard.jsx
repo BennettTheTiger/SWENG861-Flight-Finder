@@ -11,6 +11,7 @@ import {
   FlightTakeoff, FlightLand, AccessTime, Airlines, Flight,
 } from '@mui/icons-material';
 
+// eslint-disable-next-line import/no-extraneous-dependencies
 import parse from 'parse-duration';
 import useWordCasing from '../../utils/wordCase';
 
@@ -26,25 +27,52 @@ const Item = styled(Paper)(({ theme }) => ({
   color: '#f7fff7ff',
 }));
 
+/**
+ *  Gets flight data from the api response and fixes casing
+ * @param {Obect} segment
+ * @param {Object} dictionaries
+ * @returns Aircraft types string with uppercase words in the sentence
+ */
 function getAircraft(segment, dictionaries) {
-  const value = dictionaries.aircraft[segment.aircraft.code] || 'N/A';
+  const value = dictionaries?.aircraft?.[segment.aircraft.code] || 'N/A';
   return useWordCasing(value);
 }
 
+/**
+ *  Gets flight data from the api response and fixes casing
+ * @param {Obect} segment
+ * @param {Object} dictionaries
+ * @returns Airline types string with uppercase words in the sentence
+ */
 function getAirline(segment, dictionaries) {
-  const value = dictionaries.carriers[segment.carrierCode] || 'N/A';
+  const value = dictionaries?.carriers?.[segment?.carrierCode] || 'N/A';
   return useWordCasing(value);
 }
 
+/**
+ * Builds a string to show what local time you will arive at an airport
+ * @param {*} info
+ * @returns {String}
+ */
 function locationAtTimeHelper(info) {
   // eslint-disable-next-line prefer-template
   return ' ' + String(info?.iataCode) + ' ' + new Date(info.at).toLocaleDateString('en-US', { dateStyle: 'short' }) + ' ' + new Date(info.at).toLocaleTimeString('en-US', { timeStyle: 'short' });
 }
 
+/**
+ * Get flight grandTotal from price object
+ * @param {*} flight
+ * @returns {String}
+ */
 function renderFlightPrice(flight) {
   return `$${flight.price.grandTotal}`;
 }
 
+/**
+ * Helper to convert amadeaus api response time to human readable format
+ * @param {String} amadeusTime
+ * @returns {String}
+ */
 function getTotalTimeAsString(amadeusTime) {
   const parsedTime = parse(amadeusTime);
   const timeParts = convertMsToTime(parsedTime);
@@ -53,6 +81,12 @@ function getTotalTimeAsString(amadeusTime) {
   return `${hoursPlural} ${minutesPlural}`;
 }
 
+/**
+ * Helper to get the flight itinerary as a human readable string
+ * @param {Object} flight
+ * @param {Number} index defaults to first itinerary
+ * @returns {String}
+ */
 function getItineraryDurationString(flight, index = 0) {
   const flightItineraryDuration = flight?.itineraries?.[index]?.duration;
   if (!flightItineraryDuration) {
@@ -61,6 +95,12 @@ function getItineraryDurationString(flight, index = 0) {
   return getTotalTimeAsString(flightItineraryDuration);
 }
 
+/**
+ * Render function for a flight itineraries segment
+ * @param {*} segment
+ * @param {*} dictionaries
+ * @returns {JSX}
+ */
 function renderSegment(segment, dictionaries) {
   const { departure, arrival } = segment;
   return (
@@ -89,6 +129,11 @@ function renderSegment(segment, dictionaries) {
   );
 }
 
+/**
+ * Renders information for a flight
+ * @param {*} props
+ * @returns {JSX}
+ */
 export default function BasicCard(props) {
   const { flight, dictionaries, flightPriceData } = props;
   const avgDifference = Number(flight.price.grandTotal - flightPriceData.avg).toFixed(2);

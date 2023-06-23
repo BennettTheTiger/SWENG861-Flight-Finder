@@ -11,7 +11,7 @@ import { findFlights, checkFlightDeal } from './api';
 import PlaneLoader from './components/PlaneLoader/PlaneLoader';
 import AirportSearch from './components/AirportSearch/AirportSearch';
 import { dateIsTodayOrFuture, getLocalDate } from './utils/date';
-import DealSummary from './components/DealScore/DealSummary';
+import DealSummary from './components/DealSummary/DealSummary';
 import NoFlightsFound from './components/NoFlightsFound/NoFlightsFound';
 import analyzeFlightData from './utils/analyzeFlightData';
 

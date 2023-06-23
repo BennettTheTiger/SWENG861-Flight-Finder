@@ -45,8 +45,6 @@ router.post(`/${API}/checkFlightDeal`, async (req, res) => {
 // finds flights
 router.post(`/${API}/findFlights`, async (req, res) => amadeus.shopping.flightOffersSearch.get({
   ...req.body,
-  departureDate: new Date().toISOString().substring(0, 10), // NOW
-  adults: '1',
 }).then(async (response) => {
   try {
     await res.json(JSON.parse(response.body));
